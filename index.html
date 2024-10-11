@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Application</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h1>Chat</h1>
+      <span class="online-status">Online</span>
+    </div>
+    <div class="chat-window" id="chatWindow">
+      <!-- Chat messages will appear here -->
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+  <script>
+                        const chatWindow = document.getElementById('chatWindow');
+                    const chatInput = document.getElementById('chatInput');
+
+                    const systemResponses = [
+                    "Hello! How can I assist you today?",
+                    "That's interesting! Tell me more.",
+                    "What would you like to know next?",
+                    "Great! Keep the conversation going.",
+                    "I'm here to help you.",
+                    ];
+
+                    function sendMessage() {
+                    const messageText = chatInput.value.trim();
+                    if (messageText) {
+                        addMessage(messageText, 'user');
+                        chatInput.value = '';
+
+                        setTimeout(() => {
+                        const systemReply = systemResponses[Math.floor(Math.random() * systemResponses.length)];
+                        addMessage(systemReply, 'system');
+                        }, 1000); // Simulate system reply delay
+                    }
+                    }
+
+                    function addMessage(text, type) {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message');
+
+                    if (type === 'user') {
+                        messageDiv.classList.add('my-message', 'appear-right');
+                    } else {
+                        messageDiv.classList.add('appear-left');
+                    }
+
+                    messageDiv.innerHTML = `
+                        <span>${text}</span>
+                        <div class="message-actions">
+                        <button onclick="editMessage(this)">Edit</button>
+                        <button onclick="deleteMessage(this)">Delete</button>
+                        </div>
+                    `;
+
+                    chatWindow.appendChild(messageDiv);
+                    chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to bottom
+                    }
+                    function editMessage(button) {
+                    const messageDiv = button.closest('.message');
+                    const messageText = messageDiv.querySelector('span');
+
+                    // Create an input field with the current message
+                    const inputField = document.createElement('input');
+                    inputField.type = 'text';
+                    inputField.value = messageText.textContent;
+                    inputField.classList.add('edit-input');
+
+                    // Replace the message text with the input field
+                    messageDiv.replaceChild(inputField, messageText);
+
+                    // Focus on the input field
+                    inputField.focus();
+
+                    // Create a save button
+                    const saveButton = document.createElement('button');
+                    saveButton.textContent = 'Save';
+                    saveButton.classList.add('save-button'); // Add class for styling
+                    saveButton.onclick = () => {
+                        const newText = inputField.value.trim();
+                        if (newText) {
+                        messageText.textContent = newText; // Update message text
+                        }
+                        messageDiv.replaceChild(messageText, inputField); // Replace input with updated text
+                        messageDiv.removeChild(saveButton); // Remove save button
+                    };
+
+                    // Append the save button to the message div
+                    messageDiv.appendChild(saveButton);
+                    }
+
+                    function deleteMessage(button) {
+                    const messageDiv = button.closest('.message');
+                    messageDiv.remove();
+                    }
+
+  </script>
+</body>
+</html>
